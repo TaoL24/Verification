@@ -38,3 +38,18 @@ SPI: assert property(
     @(posedge clk)
     !w_en ##1 w_en |-> w_en[*16] ##1 !w_en
 );
+
+property P1;
+    @(posedge clk iff VALID) en1 || en2;
+endproperty
+
+/* quiz 
+If the req-ack handshake occurs then:
+● gnt is true on only the 2nd cycle after the req ack handshake.
+● ends is true on only the 6th cycle after gnt is true.
+*/
+property HANDSHAKE;
+    @(negedge clk) (req ##1 ack) |=> (!gnt ##1 gnt ##1 (!gnt && !ends)[*5] ##1 (!gnt && ends) ) ;
+endproperty
+
+A1: assert (HANDSHAKE);
