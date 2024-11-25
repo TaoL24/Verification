@@ -10,11 +10,11 @@ class Solution:
         out = []
         cur = root
 
-        while cur or stack:
-            if cur:
-                out.append(cur.val)
-                stack.append(cur.right)
-                cur = cur.left
+        while root or stack:
+            if root:
+                out.append(root.val)
+                stack.append(root.right)
+                root = root.left
             else:
-                cur = stack.pop()
+                root = stack.pop()
         return out
