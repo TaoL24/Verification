@@ -31,3 +31,36 @@ fork:f1
 join_none
 
 // only the thread 3,4 will be disabled, since we have the encapuslation for the f2
+
+
+// task is static; function is automatic !!BY DEFAULT!!
+for(inti=0;i<=10;i++)
+begin
+    fork
+        automatic int j=i; //note you must declare a automatic copy of j here other wise it will be same value(10) when you spawn all some_task()
+        begin
+            printsomething;
+            some_task(j);
+        end
+    join_none
+end
+
+
+// task varible also static in default, if no "automatic" added, the output is: 
+// #11ns 20
+// #20ns 20
+task print(automatic i);
+    #10ns;
+    $display("%s ns %d", $time, i);
+endtask
+
+initial begin
+    fork
+        begin
+            #1ns;print(10);
+        end
+        begin
+            #10ns;print(20);
+        end
+    join 
+end
