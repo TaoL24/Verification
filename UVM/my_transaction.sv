@@ -4,6 +4,13 @@ class my_transcation extends uvm_sequence_item;
     rand bit [3:0] da;
     rand reg payload[$];
 
+    // uvm field macros: enable automation methods for class property
+    // automation methods
+    // copy, clone
+    // compare
+    // print
+    // record
+    // pack
     `uvm_object_utils_begin(my_transcation)
         `uvm_field_int(sa, UVM_ALL_ON)
         `uvm_field_int(da, UVM_ALL_ON)
@@ -28,3 +35,7 @@ class my_transcation extends uvm_sequence_item;
 
 
 endclass //my_transcation extends uvm_sequence_item
+
+
+// initailize:
+my_transcation t1 = new ("t1"); // instance name same as handle name
