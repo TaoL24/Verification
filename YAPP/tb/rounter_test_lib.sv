@@ -11,6 +11,7 @@ class base_test extends uvm_test;
     endfunction
 
     function void build_phase(uvm_phase phase);
+        // uvm_config_int::set(this, "tb.yapp.tx_agent", "is_active", UVM_PASSIVE); // set for configuration
         super.build_phase(phase);
         tb.new("tb", this);
         uvm_config_wrapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase",
