@@ -63,3 +63,17 @@ class yapp_packet extends uvm_sequence_item;
     set_parity();
   endfunction
 endclass: yapp_packet
+
+
+class short_yapp_packet extends yapp_packet;
+  
+  `uvm_object_utils(short_yapp_packet)
+
+  // Constructor
+  function new (string name = "short_yapp_packet") 
+    super.new(name);
+  endfunction
+
+  constraint short_length {length < 15; }
+  constraint not_addr_2 {addr != 2'b10; }
+endclass
