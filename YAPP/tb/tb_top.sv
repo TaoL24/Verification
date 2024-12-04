@@ -6,25 +6,26 @@ Notes         : From the Cadence "SystemVerilog Advanced Verification with UVM" 
 Copyright Cadence Design Systems (c)2015
 -----------------------------------------------------------------*/
 
-module top;
+module tb_top;
 // import the UVM library
 import uvm_pkg::*;
 // include the UVM macros
 `include "uvm_macros.svh";
 
 // import the YAPP package
-`include "yapp_pkg.sv";
+`include "yapp_pkg::*";
+
+// import multichannel sequencer and sequences
+`include "router_mcsequencer.sv";
+`include "router_mcseqs_lib.sv";
 
 // import the testbench and test library file
 `include "router_tb.sv";
 `include "router_test_lib.sv";
 
 initial begin
+    yapp_if_cfg::set(null, "uvm_test_top.tb.yapp.tx_agent.*", "vif", hw_top.in0);
     run_test("base_test");
 end
 
-// generate 5 random packets and use the print method
-// to display the results
-
-// experiment with the copy, clone and compare UVM method
-endmodule : top
+endmodule : tb_top

@@ -135,7 +135,7 @@ class yapp_111_seq extends yapp_base_seq;
   virtual task body();
     `uvm_info(get_type_name(),"Executing YAPP_111_SEQ", UVM_LOW);
     repeat(3)
-      `uvm_do(single_seq)
+      `uvm_do(addr_1_seq)
   endtask
 endclass
 
@@ -203,5 +203,24 @@ class yapp_exhaustive_seq extends yapp_base_seq;
     `uvm_do(y111)
     `uvm_do(yaddr)
     `uvm_do(yincr)
+  endtask
+endclass
+
+class yapp_rnd_seq extends yapp_base_seq;
+
+  `uvm_object_utils(yapp_rnd_seq)
+
+  // Constructor
+  function new(string name="yapp_rnd_seq");
+    super.new(name);
+  endfunction
+
+  rand int count;
+  constraint count_limit {count inside {[1:10]}}
+
+  virtual task body();
+    `uvm_info(get_type_name(),"Executing YAPP_RND_SEQ", UVM_LOW);
+    repeat(count)
+      `uvm_do(req)
   endtask
 endclass
