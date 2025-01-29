@@ -1,7 +1,7 @@
 module seq_detect (
-    input clk,rst;
-    input in;
-    output logic out;
+    input clk,rst,
+    input in,
+    output logic out
 );
     
 // 10010 detector!!!

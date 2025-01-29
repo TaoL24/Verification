@@ -1,14 +1,14 @@
 module syn_fifo #(parameter DEPTH = 8, WIDTH = 8)(
-    input clk;
-    input rstn;
+    input clk,
+    input rstn,
 
-    input [WIDTH-1:0] w_data;
-    output reg full;
-    input w_en;
+    input [WIDTH-1:0] w_data,
+    output reg full,
+    input w_en,
 
-    output reg [WIDTH-1:0] r_data;
-    output reg empty;
-    input r_en;
+    output reg [WIDTH-1:0] r_data,
+    output reg empty,
+    input r_en
 );
     parameter ptr_depth = $clog2(DEPTH);
     reg [ptr_depth:0] w_ptr, r_ptr; // 1+logN bits

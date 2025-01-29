@@ -1,6 +1,6 @@
 module arbiter #(parameter LENGTH = 8) (
-    input [LENGTH-1:0] req;
-    output reg [LENGTH-1:0] gnt;
+    input [LENGTH-1:0] req,
+    output reg [LENGTH-1:0] gnt
 );
     // fixed priority
     // solution1
