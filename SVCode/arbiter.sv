@@ -37,7 +37,7 @@ module variable_priority_arbiter #(parameter LENGTH = 4) (
 
 /*
 suppose the input priority is 00100 
-priority_int will be 00000_00100
+priority_int will be    00000_00100
 imagine the reqs_int is 01000_01000 //case1
 imagine the reqs_int is 00100_00100 //case2
 imagine the reqs_int is 00010_00010 //case3
