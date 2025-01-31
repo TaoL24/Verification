@@ -76,5 +76,73 @@ initial begin
     $display("enum3 value &b, enum3 name %s", enum3, enum3.name());  //enum3 value x, enum3 name
 end
 
+// 1.46 What is the output of this code?  ERROR!!!
+module polymorph(); 
+    class base; 
+        virtual function void display(); 
+            $display("Am in Base class"); 
+        endfunction 
+    endclass 
+    
+    class ext extends base; 
+        function void display(); 
+            $display("Am in Extended class"); 
+        endfunction 
+    endclass 
+    
+    initial begin 
+        base b1 = new(); // should then let b1 = e2, point to a sub class
+        ext e1,e2; 
+        $cast (e1,b1); 
+        e1.display(); 
+    end 
+endmodule
 
  
+// 1.66
+module polymorph(); 
+    class base; // BASE CLASS 
+        virtual function void display(); 
+            $display("Am in Base class"); 
+        endfunction 
+    endclass 
+
+    class ext extends base; // EXTENDED CLASS 
+        function void display(); 
+            $display("Am in Extended class"); 
+        endfunction 
+    endclass
+
+    class error extends ext; // EXTENDED CLASS 
+        function void display(); 
+            $display("Am in Error class"); 
+        endfunction 
+    endclass
+
+    initial begin 
+        base b1; 
+        ext e1,e2; 
+        error er1 = new; 
+        e1 = er1; 
+        b1 = e1; 
+        er1.display(); // Am in Error class  
+        e1.display(); // Am in Error class  
+        b1.display(); // Am in Error class  
+    end 
+endmodule
+
+
+// 1.89What is the value of write_data from the $display statement in this code? 
+
+bit [7:0] error_en = 'd8; 
+module drive_data(input logic [7:0] enable, output [7:0] write_data); 
+    bit [7:0] error en; 
+    assign write_data = $unit::error_en; 
+    
+    initial begin 
+        #10ns; 
+        error_en ++; 
+        #10ns; 
+        $display("value of write data is %d", write_data); 
+    end 
+endmodule
