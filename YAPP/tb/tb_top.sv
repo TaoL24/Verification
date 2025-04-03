@@ -9,11 +9,22 @@ Copyright Cadence Design Systems (c)2015
 module tb_top;
 // import the UVM library
 import uvm_pkg::*;
+
 // include the UVM macros
 `include "uvm_macros.svh";
 
 // import the YAPP package
-`include "yapp_pkg::*";
+import yapp_pkg::*;
+
+// add more UVCs pkg
+// import the channel package
+import channel_pkg::*;
+
+// import the HBUS package
+import hbus_pkg::*;
+
+// import the clock_and_reset package
+import clock_and_reset_pkg::*;
 
 // import multichannel sequencer and sequences
 `include "router_mcsequencer.sv";
@@ -24,7 +35,19 @@ import uvm_pkg::*;
 `include "router_test_lib.sv";
 
 initial begin
-    yapp_if_cfg::set(null, "uvm_test_top.tb.yapp.tx_agent.*", "vif", hw_top.in0);
+    yapp_if_cfg::set(null, "*.tb.yapp.tx_agent.*", "vif", hw_top.in0);
+
+    // set the channel interface
+    channel_vif_config::set(null, "*.tb.chan0.*", "vif", hardware.chan_in0);
+    channel_vif_config::set(null, "*.tb.chan1.*", "vif", hardware.chan_in1);
+    channel_vif_config::set(null, "*.tb.chan2.*", "vif", hardware.chan_in2);
+
+    // set the HBUS interface
+    hbus_vif_config::set(null, "*.tb.hbus.*", "vif", hardware.hbus_in0);
+
+    // set the clock_and_reset interface
+    clock_and_reset_vif_config::set(null, "*.tb.clk_rst.*", "vif", hardware.clk_rst_in0);
+
     run_test("base_test");
 end
 

@@ -20,11 +20,22 @@ module hw_top;
   // YAPP Interface to the DUT
   yapp_if in0(clock, reset);
 
+  // Channel interface
+   channel_if chan_in0(clock, reset);
+   channel_if chan_in1(clock, reset);
+   channel_if chan_in2(clock, reset);
+
+   // HBUS interface
+   hbus_if hbus_in0(clock, reset);
+      
+   // Clock and reset interface
+   clock_and_reset_if clk_rst_in0(clock, reset, run_clock, clock_period);   
+
   // CLKGEN module generates clock
   clkgen clkgen (
         .clock(clock),
-        .run_clock(1'b1),
-        .clock_period(32'd10)
+        .run_clock(run_clock),
+        .clock_period(clock_period)
   );
 
    yapp_router dut(
@@ -39,23 +50,23 @@ module hw_top;
 
         // Output Channels
         //Channel 0
-        .data_0(),
-        .data_vld_0(),
-        .suspend_0(1'b0),
+        .data_0(chan_in0.data),
+        .data_vld_0(chan_in0.data_vld),
+        .suspend_0(chan_in0.suspend),
         //Channel 1
-        .data_1(),
-        .data_vld_1(),
-        .suspend_1(1'b0),
+        .data_1(chan_in1.data),
+        .data_vld_1(chan_in1.data_vld),
+        .suspend_1(chan_in1.suspend),
         //Channel 2
-        .data_2(),
-        .data_vld_2(),
-        .suspend_2(1'b0),
+        .data_2(chan_in2.data),
+        .data_vld_2(chan_in2.data_vld),
+        .suspend_2(chan_in2.suspend),
 
         // HBUS Interface 
-        .haddr(),
-        .hdata(),
-        .hen(),
-        .hwr_rd()
+        .haddr(hbus_in0.haddr),
+        .hdata(hbus_in0.hdata_w), // for bi-directional bus on dut we use this wire signal
+        .hen(hbus_in0.hen),
+        .hwr_rd(hbus_in0.hwr_rd)
     );
 
   initial begin

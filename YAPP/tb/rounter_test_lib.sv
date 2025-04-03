@@ -99,7 +99,7 @@ class incr_payload_test extends base_test;
     endfunction
 
     function void build_phase(uvm_phase phase);
-        set_type_override_by_type(yapp_packet::get_type, short_yapp_packet::get_type());
+        set_type_override_by_type(yapp_packet::get_type(), short_yapp_packet::get_type());
         uvm_config_wapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase", "default_sequence", yapp_incr_payload_seq::get_type());
         super.build_phase(phase);
     endfunction
@@ -114,7 +114,7 @@ class exhaustive_seq_test extends base_test;
     endfunction
 
     function void build_phase(uvm_phase phase);
-        set_type_override_by_type(yapp_packet::get_type, short_yapp_packet::get_type());
+        set_type_override_by_type(yapp_packet::get_type(), short_yapp_packet::get_type());
         uvm_config_wapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase", "default_sequence", yapp_exhaustive_seq::get_type());
         super.build_phase(phase);
     endfunction
@@ -131,7 +131,7 @@ class short_yapp_012_test extends base_test;
     endfunction
 
     function void build_phase(uvm_phase phase);
-        set_type_override_by_type(yapp_packet::get_type, short_yapp_packet::get_type());
+        set_type_override_by_type(yapp_packet::get_type(), short_yapp_packet::get_type());
         uvm_config_wapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase", "default_sequence", yapp_012_seq::get_type());
         super.build_phase(phase);
     endfunction
@@ -148,8 +148,56 @@ class multichannel_test extends base_test;
     endfunction
 
     function void build_phase(uvm_phase phase);
-        set_type_override_by_type(yapp_packet::get_type, short_yapp_packet::get_type());
+        set_type_override_by_type(yapp_packet::get_type(), short_yapp_packet::get_type());
         uvm_config_wapper::set(this, "tb.mcseqr.run_phase", "default_sequence", router_mcseqs::get_type());
         super.build_phase(phase);
     endfunction
 endclass
+
+//------------------------------------------------------------------------------
+// Multi UVC lab test
+//------------------------------------------------------------------------------ 
+class simple_test extends base_test;
+   
+   // UVM component utility macro
+   `uvm_component_utils(simple_test)
+
+   // Constructor
+   function new(string name, uvm_component parent);
+      super.new(name, parent);
+   endfunction : new
+
+   // Build_phase method
+   function void build_phase(uvm_phase phase);
+      set_type_override(yapp_packet::get_type(), short_yapp_packet::get_type());
+      super.build_phase(phase);
+      uvm_config_wrapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase", "default_sequence", yapp_012_seq::get_type());
+      uvm_config_wrapper::set(this, "tb.chan?.rx_agent.sequencer.run_phase","default_sequence", channel_rx_resp_seq::get_type());
+      uvm_config_wrapper::set(this, "tb.clk_rst.agent.sequencer.run_phase", "default_sequence", clk10_rst5_seq::get_type());
+
+   endfunction : build_phase
+
+endclass : simple_test
+
+class test_uvc_integration extends base_test;
+   
+   // UVM component utility macro
+   `uvm_component_utils(test_uvc_integration)
+
+   // Constructor
+   function new(string name, uvm_component parent);
+      super.new(name, parent);
+   endfunction : new
+
+   // Build_phase method
+   function void build_phase(uvm_phase phase);
+      set_type_override(yapp_packet::get_type(), short_yapp_packet::get_type());
+      super.build_phase(phase);
+      uvm_config_wrapper::set(this, "tb.clk_rst.agent.sequencer.run_phase",  "default_sequence", clk10_rst5_seq::get_type());
+      uvm_config_wrapper::set(this, "tb.yapp.tx_agent.sequencer.run_phase",  "default_sequence", yapp_4_channel_seq::get_type()); // this seq not implementment
+      uvm_config_wrapper::set(this, "tb.chan?.rx_agent.sequencer.run_phase", "default_sequence", channel_rx_resp_seq::get_type());
+      uvm_config_wrapper::set(this, "tb.hbus.masters[0].sequencer.run_phase","default_sequence", hbus_small_packet_seq::get_type());
+
+   endfunction : build_phase
+
+endclass : test_uvc_integration
