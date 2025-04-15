@@ -14,6 +14,8 @@ class router_tb extends uvm_env;
 
     router_mcsequencer mcseqr; // multichannel sequencer handle
 
+    router_scoreboard router_sb; // scoreboard handle
+
     `uvm_component_utils(router_tb)
 
     function new(string name, uvm_component parent);
@@ -43,12 +45,22 @@ class router_tb extends uvm_env;
         // clock and reset UVC
         clock_and_reset = clock_and_reset_env::type_id::create("clock_and_reset", this);
 
+        // virtual sequencer
         mcseqr = router_mcsequencer::type_id::create("mcseqr", this);
+
+        // router scoreboard
+        router_sb = router_scoreboard::type_id::create("router_sb", this);
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
         mcseqr.yapp_seqr = yapp.tx_agent.sequencer;
         mcseqr.hbus_seqr = hbus.masters[0].sequencer;
+
+        // Connect the TLM ports form the YAPP and Channel UVCs to the scoreboard
+        yapp.tx_agent.monitor.item_collected_port.connect(router_sb.yapp_in);
+        chan0.rx_agent.monitor.item_collected_port.connect(router_sb.chan0_in);
+        chan1.rx_agent.monitor.item_collected_port.connect(router_sb.chan1_in);
+        chan2.rx_agent.monitor.item_collected_port.connect(router_sb.chan2_in);
     endfunction: connect_phase
 
 endclass: router_tb

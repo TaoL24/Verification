@@ -12,6 +12,9 @@ class yapp_tx_monitor extends uvm_monitor;
     // Collected Data handle
     yapp_packet pkt;
 
+    // analysis port for connecting scoreboard
+    uvm_analysis_port #(yapp_packet) item_collected_port;
+
     // Count packets collected
     int num_pkt_col;
 
@@ -24,6 +27,7 @@ class yapp_tx_monitor extends uvm_monitor;
     
     function void new(string name, uvm_component parent);
         super.new(name, parent);
+        item_collected_port = new("item_collected_port", this); // no factory
     endfunction
 
     function connect_phase(uvm_phase phase);
@@ -59,6 +63,7 @@ class yapp_tx_monitor extends uvm_monitor;
             // End transaction recording
             end_tr(pkt);
             `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
+            yapp_port.write_yapp(pkt);
             num_pkt_col++;
         end
     endtask

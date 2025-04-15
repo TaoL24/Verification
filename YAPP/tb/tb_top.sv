@@ -26,11 +26,14 @@ import hbus_pkg::*;
 // import the clock_and_reset package
 import clock_and_reset_pkg::*;
 
-// import multichannel sequencer and sequences
+// include multichannel sequencer and sequences
 `include "router_mcsequencer.sv";
 `include "router_mcseqs_lib.sv";
 
-// import the testbench and test library file
+// include the router scoreboard file before the tb
+`include "router_scoreboard.sv"
+
+// include the testbench and test library file
 `include "router_tb.sv";
 `include "router_test_lib.sv";
 
