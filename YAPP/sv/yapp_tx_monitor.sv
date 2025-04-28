@@ -63,7 +63,7 @@ class yapp_tx_monitor extends uvm_monitor;
             // End transaction recording
             end_tr(pkt);
             `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
-            yapp_port.write_yapp(pkt);
+            item_collected_port.write_yapp(pkt);
             num_pkt_col++;
         end
     endtask
