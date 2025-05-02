@@ -130,3 +130,33 @@ property q3;
     @(posedge clk) (Req ##1 Ack) |-> !Gnt[*1:2] ##1 Gnt ##1 !Finish[*5] ##1 Finish; // 2nd approach
 endproperty
 
+
+
+// Module 4: Coverage
+
+//throughout DRdy[*1:3], Busy should remain high
+C1: cover property (@(posedge clk) ( (GntA || GntB) ##1 (Busy throughout DRdy[*1:3]) ##0 Done) );
+
+// it has 2 meanings:
+// 1) A followed by B
+// 2) A not occurring, this is not what we want 
+C12: cover property ( A |=> B);
+
+// in this 2) case, we could use cover sequence
+C13: cover sequence ( A ##1 B);
+// cover sequence ( A |=> B); is illegal!!!!!
+
+
+// Module 5: Liveness Properties
+
+// weak prop: claims nothing bad happens, in finite waveform
+SAFETY1: assert property (@(posedge clk) A |-> weak(!C[*] ##0 B) );
+
+// strong prop: claims something good happens, eventually, in infinite waveform
+LIVENESS1: assert property (@(posedge clk) A |-> strong(!C[*] ##0 B) );
+
+// Linear Temporal Logic (LTL) Operators
+
+// S_EVEN_UBND equals to P2
+S_EVEN_UBND: assert property (REQ |-> s_eventually GNT);
+P2: assert property (REQ |-> strong(##[0:$] GNT) );
