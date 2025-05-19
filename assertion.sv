@@ -298,3 +298,34 @@ endproperty
 
 FRMCHK_BEST :  assert property(framecheck);
 
+
+// Module 12: Constructs for property
+
+// until, until_with, s_until, s_until_with
+P_UNTIL_NOVRLP_W: assert property (B |=> (C until D) );
+P_UNTIL_OVRLP_W:  assert property (B |=> (C until_with D) );
+P_UNTIL_NOVRLP_S: assert property (B |=> (C s_until D) );
+P_UNTIL_OVRLP_S:  assert property (B |=> (C s_until_with D) );
+
+// always <property expression>
+// Defines a property which requires <property expression> to be true in the current cycle and all future cycles
+assume property (s_eventually always !request);
+
+// follow by operator
+seq #-# prop; // overlapping, equivalent to 
+not (sequence_expr |-> not property_expr);
+
+seq #=# prop; // nonoverlapping, equivalent to 
+not (sequence_expr |=> not property_expr);
+
+// useful use:
+// Make sure precondition can be hit and extended to infinity
+
+assert property (a |-> s_eventually b); // liveness assert
+cover  property (a #-# always 1); // make sure a happens, not vacuously true!!!!
+
+
+// implies 
+// For the expression to pass prop2 must be true if prop1 is ture
+prop1 implies prop2;
+// they are evaluated concurrently!!!!
