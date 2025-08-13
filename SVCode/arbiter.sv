@@ -4,12 +4,12 @@ module arbiter #(parameter LENGTH = 8) (
 );
     // fixed priority
     // solution1
-    assign gnt = req & (~(req - 'd1)); 
+    assign gnt = req & (~(req - 'd1)); // find last 1, a number & it's 2's complement number result in the last 1 position
 
     //solution2
     reg [LENGTH-1:0] pre_req;
 
-    pre_req[0] = req[0];
+    pre_req[0] = 1'b0;
     pre_req[LENGTH-1:1] = req[LENGTH-2:0] | pre_req[LENGTH-2:0];
     gnt = req & ~pre_req;
 
@@ -26,6 +26,9 @@ module arbiter #(parameter LENGTH = 8) (
 
     assign gnt = gnt_int;
 endmodule
+
+// 0101 -> 0100;
+
 
 
 // Round robin arbiter
