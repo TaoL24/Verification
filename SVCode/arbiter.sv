@@ -18,43 +18,53 @@ module arbiter #(parameter LENGTH = 8) (
     assign kills[0] = 1'b0; // 0 means not blocking 
     wire [LENGTH-1:0] gnt_int;
 
-    genvar i;
-    for (i =0; i < LENGTH; i++) begin: pre_req_logic
-        assign gnt_int[i] = !kills[i] & req[i]; // only kill=0 and current req=1, grant it!!
-        assign kills[i+1] = kills[i] | gnt_int[i]; // if prev kill chain blocking, or already grant, block current kill 
-    end
+    generate
+        for (genvar i =0; i < LENGTH; i++) begin: pre_req_logic
+            assign gnt_int[i] = !kills[i] & req[i]; // only kill=0 and current req=1, grant it!!
+            assign kills[i+1] = kills[i] | gnt_int[i]; // if prev kill chain blocking, or already grant, block current kill 
+        end
+    endgenerate
 
     assign gnt = gnt_int;
 endmodule
 
-// 0101 -> 0100;
+// 0101 -> 0001;
 
 
 
 // Round robin arbiter
-module variable_priority_arbiter #(parameter LENGTH = 4) (
-    input [LENGTH-1:0] priority,
-    input [LENGTH-1:0] req;
-    output [LENGTH-1:0] gnt;
+module #(parameter N = 8) rr_abt(
+  input clk, rstn,
+  input  logic [N-1:0] req,
+  output logic [N-1:0] gnt 
 );
 
-/*
-suppose the input priority is 00100 
-priority_int will be    00000_00100
-imagine the reqs_int is 01000_01000 //case1
-imagine the reqs_int is 00100_00100 //case2
-imagine the reqs_int is 00010_00010 //case3
-*/
-    wire [2*LENGTH : 0] kills;
-    wire [2*LENGTH-1 : 0] priority_int = {{LENGTH{1'b0}}, priority}; 
-    wire [2*LENGTH-1 : 0] reqs_int = {req,req};
-    wire [2*LENGTH-1 : 0] grants_int;
-    
-    assign kills[0] = 1'b0;
-    genvar i;
-    for (i =0; i < LENGTH; i++) begin: pre_req_logic
-        assign grants_int[i] = priority_int[i] ? reqs_int[i] : (!kills[i] & reqs_int[i]);
-        assign kills[i+1] = priority_int[i] ? grants_int[i] : (kills[i] | grants_int[i]);
+  // unmasked simple arbiter
+  logic [N-1:0] unmasked_higher_pri_req;
+  logic [N-1:0] unmasked_gnt;
+  assign unmasked_higher_pri_req[0] = 0;
+  assign unmasked_higher_pri_req[N-1:1] = unmasked_higher_pri_req[N-2:0] | req[N-2:0];
+  assign unmasked_gnt = req & ~unmasked_higher_pri_req;
+
+  // masked simple arbiter
+  logic [N-1:0] masked_higher_pri_req;
+  logic [N-1:0] masked_gnt;
+  logic [N-1:0] masked_req;
+  assign masked_req = req & ptr;
+  assign masked_higher_pri_req[0] = 0;
+  assign masked_higher_pri_req[N-1:1] = masked_higher_pri_req[N-2:0] | masked_req[N-2:0];
+  assign masked_gnt = masked_req & ~masked_higher_pri_req;
+
+
+  logic [N-1:0] ptr;
+
+  always_ff @( posedge clk, negedge rstn ) begin
+    if (!rstn) ptr <= {N{1'b1}};
+    else begin
+      if(|masked_req) ptr <= masked_higher_pri_req;
+      else if (|req)  ptr <= unmasked_higher_pri_req;
     end
-    
-endmodule    
+  end
+
+  assign gnt = (|masked_req) ? masked_gnt : unmasked_gnt;
+endmodule  
