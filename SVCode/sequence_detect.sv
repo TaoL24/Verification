@@ -101,3 +101,23 @@ always_ff @(posedge clk, negedge rstn) begin
     end
 end
 endmodule
+
+
+module seq_detect_sr(
+    input clk, rstn,
+    input  logic in,
+    output logic out
+);
+
+    // seq detect for 10110
+
+    logic [4:0] shift_reg;
+
+    always_ff @(posedge clk or negedge rstn) begin
+        if (!rstn) shift_reg <= 5'b0;
+        else shift_reg <= {shift_reg[3:0], in};
+    end
+
+    assign out = shift_reg == 5'b10110;
+
+endmodule
